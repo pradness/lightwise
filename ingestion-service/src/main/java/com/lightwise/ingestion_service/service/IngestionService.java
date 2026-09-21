@@ -22,7 +22,7 @@ public class IngestionService {
                 .energyConsumed(input.energyConsumed())
                 .timestamp(input.timestamp())
                 .build();
-        kafkaTemplate.send("energyUsage", event);
+        kafkaTemplate.send("energy-usage", event);
         log.info("Ingested Energy Usage Event: {}", event);
     }
 }

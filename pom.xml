@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://apache.org" xmlns:xsi="http://w3.org" xsi:schemaLocation="http://apache.org http://apache.org">
+<project xmlns="http://apache.org"
+         xmlns:xsi="http://w3.org">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.lightwise</groupId>
-    <artifactId>lightwise-parent</artifactId>
+    <artifactId>lightwise</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -12,6 +13,7 @@
         <module>device-service</module>
         <module>ingestion-service</module>
         <module>usage-service</module>
+        <module>alert-service</module>
     </modules>
 
     <dependencies>
