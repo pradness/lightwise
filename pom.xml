@@ -14,6 +14,7 @@
         <module>ingestion-service</module>
         <module>usage-service</module>
         <module>alert-service</module>
+        <module>insight-service</module>
     </modules>
 
     <dependencies>
