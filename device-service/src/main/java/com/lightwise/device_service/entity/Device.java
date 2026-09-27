@@ -16,24 +16,30 @@ import lombok.NoArgsConstructor;
 import com.lightwise.device_service.model.DeviceType;
 
 @Entity
-@Table(name="device")
+@Table(name = "device")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
 public class Device {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private String name;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="type")
-    private DeviceType type;
-    
-    private String location;
+  private String name;
 
-    @Column(name="user_id")
-    private Long userId;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "type")
+  private DeviceType type;
+
+  private String location;
+
+  @Column(name = "user_id")
+  private Long userId;
+
+  @Column(name = "is_on")
+  private Boolean isOn;
+  @Column(name = "never_shut_off")
+  private Boolean neverShutOff;
+
 }

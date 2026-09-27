@@ -31,4 +31,12 @@ public class UsageController {
     final UsageDto usage = usageService.getXDaysUsageForUser(userId, days);
     return ResponseEntity.ok(usage);
   }
+
+  @GetMapping({"/{deviceId}/history", "/device/{deviceId}/history"})
+  public ResponseEntity<com.lightwise.usage_service.dto.DeviceUsageHistoryDto> getDeviceUsageHistory(
+      @PathVariable Long deviceId,
+      @RequestParam(defaultValue = "1h") String window) {
+    final com.lightwise.usage_service.dto.DeviceUsageHistoryDto history = usageService.getDeviceUsageHistory(deviceId, window);
+    return ResponseEntity.ok(history);
+  }
 }

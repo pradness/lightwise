@@ -3,6 +3,7 @@ package com.lightwise.api_gateway.route;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
 
+import org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions;
 import java.net.URI;
 
 import org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions;
@@ -36,6 +37,16 @@ public class InsightServiceRoutes {
     return GatewayRouterFunctions.route("fallbackRoute")
         .route(RequestPredicates.path("/fallbackRoute"),
             request -> ServerResponse.status(HttpStatus.SERVICE_UNAVAILABLE).body("Insight service is down"))
+        .build();
+  }
+
+  @Bean
+  public RouterFunction<ServerResponse> insightServiceApiDocs() {
+    return GatewayRouterFunctions.route("insight-service-api-docs")
+        .route(RequestPredicates.path("/docs/insight-service/v3/api-docs"),
+            HandlerFunctions.http())
+        .before(BeforeFilterFunctions.uri("http://localhost:8085"))
+        .filter(FilterFunctions.setPath("/v3/api-docs"))
         .build();
   }
 }

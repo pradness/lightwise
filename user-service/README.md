@@ -82,7 +82,7 @@ user-service/
 
 ## How a request works
 
-For example, when a client sends `POST /api/v1/users`:
+For example, when a client sends `POST /api/v1/user`:
 
 1. Spring receives the HTTP request.
 2. `UserController` matches the URL and HTTP method.
@@ -126,7 +126,7 @@ Spring application context.
 `UserController` is the HTTP/API layer. `@RestController` tells Spring that its methods
 handle web requests and that returned objects should normally be written as JSON.
 
-`@RequestMapping("/api/v1/users")` defines the common URL prefix. The `v1` makes it
+`@RequestMapping("/api/v1/user")` defines the common URL prefix. The `v1` makes it
 possible to introduce a future API version without unexpectedly changing existing
 clients.
 
@@ -134,10 +134,10 @@ Available endpoints:
 
 | Method | URL | Purpose | Success response |
 | --- | --- | --- | --- |
-| `POST` | `/api/v1/users` | Create a user | `201 Created` with the created user |
-| `GET` | `/api/v1/users/{id}` | Find a user | `200 OK`, or `404 Not Found` |
-| `PUT` | `/api/v1/users/{id}` | Replace user fields | `200 OK` with a text message |
-| `DELETE` | `/api/v1/users/{id}` | Delete a user | `204 No Content` |
+| `POST` | `/api/v1/user` | Create a user | `201 Created` with the created user |
+| `GET` | `/api/v1/user/{id}` | Find a user | `200 OK`, or `404 Not Found` |
+| `PUT` | `/api/v1/user/{id}` | Replace user fields | `200 OK` with a text message |
+| `DELETE` | `/api/v1/user/{id}` | Delete a user | `204 No Content` |
 
 `@PathVariable` reads the `{id}` portion of the URL. `@RequestBody` reads JSON from the
 request body. `ResponseEntity` lets the controller choose both the HTTP status and
@@ -146,7 +146,7 @@ response body.
 Example create request:
 
 ```http
-POST http://localhost:8080/api/v1/users
+POST http://localhost:8080/api/v1/user
 Content-Type: application/json
 ```
 
@@ -446,7 +446,7 @@ mvnw.cmd spring-boot:run
 The API is then available at:
 
 ```text
-http://localhost:8080/api/v1/users
+http://localhost:8080/api/v1/user
 ```
 
 The OpenAPI/Swagger UI supplied by Springdoc is normally available at:

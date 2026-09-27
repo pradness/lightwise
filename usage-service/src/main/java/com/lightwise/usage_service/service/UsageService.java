@@ -299,4 +299,68 @@ public class UsageService {
     return UsageDto.builder().userId(userId).devices(resultDevices).build();
   }
 
+  public com.lightwise.usage_service.dto.DeviceUsageHistoryDto getDeviceUsageHistory(Long deviceId, String window) {
+    long seconds = parseWindowToSeconds(window);
+    Instant now = Instant.now();
+    Instant start = now.minusSeconds(seconds);
+
+    String fluxQuery = String.format("""
+        from(bucket: "%s")
+          |> range(start: time(v: "%s"), stop: time(v: "%s"))
+          |> filter(fn: (r) => r["_measurement"] == "%s")
+          |> filter(fn: (r) => r["_field"] == "energyConsumed")
+          |> filter(fn: (r) => r["deviceId"] == "%s")
+        """, influxBucket, start.toString(), now.toString(), MEASUREMENT_ENERGY_USAGE, String.valueOf(deviceId));
+
+    List<com.lightwise.usage_service.dto.DeviceUsageHistoryDto.DataPoint> dataPoints = new ArrayList<>();
+    double totalEnergy = 0.0;
+
+    try {
+      QueryApi queryApi = influxDBClient.getQueryApi();
+      List<FluxTable> tables = queryApi.query(fluxQuery, influxOrg);
+      for (FluxTable table : tables) {
+        for (FluxRecord record : table.getRecords()) {
+          Instant time = record.getTime();
+          double value = record.getValueByKey("_value") instanceof Number
+              ? ((Number) Objects.requireNonNull(record.getValueByKey("_value"))).doubleValue()
+              : 0.0;
+          dataPoints.add(new com.lightwise.usage_service.dto.DeviceUsageHistoryDto.DataPoint(time, value));
+          totalEnergy += value;
+        }
+      }
+    } catch (Exception e) {
+      log.error("Failed to query InfluxDB for device {} history: {}", deviceId, e.getMessage());
+    }
+
+    return com.lightwise.usage_service.dto.DeviceUsageHistoryDto.builder()
+        .deviceId(deviceId)
+        .window(window)
+        .totalEnergyConsumed(totalEnergy)
+        .dataPoints(dataPoints)
+        .build();
+  }
+
+  private long parseWindowToSeconds(String window) {
+    if (window == null || window.isBlank()) {
+      return 3600;
+    }
+    String cleaned = window.trim().toLowerCase();
+    try {
+      if (cleaned.endsWith("h")) {
+        return Long.parseLong(cleaned.substring(0, cleaned.length() - 1)) * 3600;
+      } else if (cleaned.endsWith("d")) {
+        return Long.parseLong(cleaned.substring(0, cleaned.length() - 1)) * 86400;
+      } else if (cleaned.endsWith("m")) {
+        return Long.parseLong(cleaned.substring(0, cleaned.length() - 1)) * 60;
+      } else if (cleaned.endsWith("s")) {
+        return Long.parseLong(cleaned.substring(0, cleaned.length() - 1));
+      } else {
+        return Long.parseLong(cleaned) * 3600;
+      }
+    } catch (NumberFormatException e) {
+      log.warn("Invalid window '{}', defaulting to 1h", window);
+      return 3600;
+    }
+  }
+
 }

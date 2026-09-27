@@ -83,7 +83,7 @@ device-service/
 
 ## How a request works
 
-For example, when a client sends `POST /api/v1/devices/create`:
+For example, when a client sends `POST /api/v1/device/create`:
 
 1. Spring receives the HTTP request.
 2. `DeviceController` matches the URL and HTTP method.
@@ -126,7 +126,7 @@ This is the entry point of the application. The `main` method calls
 `DeviceController` is the REST API layer. `@RestController` tells Spring that this
 class handles HTTP requests and that returned objects should be serialized as JSON.
 
-`@RequestMapping("api/v1/devices")` defines the common URL prefix for all methods in
+`@RequestMapping("api/v1/device")` defines the common URL prefix for all methods in
 the class. The API version is included so a future version can be introduced without
 breaking existing clients.
 
@@ -134,10 +134,10 @@ Available endpoints:
 
 | Method | URL | Purpose | Success response |
 | --- | --- | --- | --- |
-| `GET` | `/api/v1/devices/{id}` | Find a device by ID | `200 OK` with the device |
-| `POST` | `/api/v1/devices/create` | Create a device | `200 OK` with the created device |
-| `PUT` | `/api/v1/devices/{id}` | Update a device | `200 OK` with the updated device |
-| `DELETE` | `/api/v1/devices/{id}` | Delete a device | `204 No Content` |
+| `GET` | `/api/v1/device/{id}` | Find a device by ID | `200 OK` with the device |
+| `POST` | `/api/v1/device/create` | Create a device | `200 OK` with the created device |
+| `PUT` | `/api/v1/device/{id}` | Update a device | `200 OK` with the updated device |
+| `DELETE` | `/api/v1/device/{id}` | Delete a device | `204 No Content` |
 
 `@PathVariable` reads the `{id}` value from the URL. `@RequestBody` reads JSON from
 the request and converts it to a `DeviceDto`. `ResponseEntity` allows the method to
@@ -146,7 +146,7 @@ choose the HTTP status and response body.
 Example create request:
 
 ```http
-POST http://localhost:8081/api/v1/devices/create
+POST http://localhost:8081/api/v1/device/create
 Content-Type: application/json
 ```
 
@@ -460,7 +460,7 @@ mvnw.cmd spring-boot:run
 The API is available at:
 
 ```text
-http://localhost:8081/api/v1/devices
+http://localhost:8081/api/v1/device
 ```
 
 The OpenAPI/Swagger UI supplied by Springdoc is normally available at:
@@ -537,8 +537,8 @@ generates source code during compilation.
 - There is no authentication or authorization.
 - `userId` is stored as a number; the service does not verify through an API call that
   the user exists.
-- The create endpoint is `/api/v1/devices/create`, rather than the more conventional
-  `/api/v1/devices`.
+- The create endpoint is `/api/v1/device/create`, rather than the more conventional
+  `/api/v1/device`.
 - The create endpoint currently returns `200 OK`, not `201 Created`.
 - The service does not use explicit `@Transactional` annotations.
 - Flyway is not included in the current dependencies, so the migration SQL is not

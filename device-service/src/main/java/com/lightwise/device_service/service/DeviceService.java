@@ -2,20 +2,28 @@ package com.lightwise.device_service.service;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.lightwise.device_service.entity.Device;
+import com.lightwise.device_service.entity.DeviceCommandLog;
+import com.lightwise.device_service.dto.CommandRequest;
 import com.lightwise.device_service.dto.DeviceDto;
+import com.lightwise.device_service.repository.DeviceCommandLogRepository;
 import com.lightwise.device_service.repository.DeviceRepository;
 import com.lightwise.device_service.exception.DeviceNotFoundException;
+import com.lightwise.device_service.model.CommandStatus;
+import com.lightwise.device_service.model.DeviceAction;
 
 @Service
 public class DeviceService {
 
   private final DeviceRepository deviceRepository;
+  private final DeviceCommandLogRepository commandLogRepository;
 
-  public DeviceService(DeviceRepository deviceRepository) {
+  public DeviceService(DeviceRepository deviceRepository, DeviceCommandLogRepository commandLogRepository) {
     this.deviceRepository = deviceRepository;
+    this.commandLogRepository = commandLogRepository;
   }
 
   public DeviceDto getDeviceById(Long id) {
@@ -67,5 +75,27 @@ public class DeviceService {
       throw new DeviceNotFoundException("Device not found with id " + id);
     }
     deviceRepository.deleteById(id);
+  }
+
+  public ResponseEntity<?> sendCommand(Long id, CommandRequest request) {
+    Device device = deviceRepository.findById(id)
+        .orElseThrow(() -> new DeviceNotFoundException("Device not found for id: " + id));
+
+    boolean neverShutOff = Boolean.TRUE.equals(device.getNeverShutOff());
+
+    if (neverShutOff && request.action() == DeviceAction.SHUTOFF) {
+      commandLogRepository.save(new DeviceCommandLog(id, request.action(), CommandStatus.BLOCKED));
+      return ResponseEntity.status(409).body("blocked: device flagged never_shut_off");
+    }
+
+    // mock adapter call for now
+    // deviceAdapter.send(device, request.action());
+
+    boolean newIsOn = request.action() == DeviceAction.RESUME;
+    device.setIsOn(newIsOn);
+    deviceRepository.save(device);
+
+    commandLogRepository.save(new DeviceCommandLog(id, request.action(), CommandStatus.EXECUTED));
+    return ResponseEntity.ok().build();
   }
 }

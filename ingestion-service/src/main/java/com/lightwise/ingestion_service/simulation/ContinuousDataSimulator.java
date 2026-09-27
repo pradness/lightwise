@@ -21,21 +21,21 @@ import java.util.Random;
 @Component
 public class ContinuousDataSimulator implements CommandLineRunner {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final Random random = new Random();
-    @Value("${simulation.requests-per-interval}")
-    private int requestsPerInterval;
-    @Value("${simulation.endpoint}")
-    private String ingestionEndpoint;
+  private final RestTemplate restTemplate = new RestTemplate();
+  private final Random random = new Random();
+  @Value("${simulation.requests-per-interval}")
+  private int requestsPerInterval;
+  @Value("${simulation.endpoint}")
+  private String ingestionEndpoint;
 
-    @Override
-    public void run(String... args) throws Exception {
-        log.info("Continuous Data Simulator started...");
-    }
+  @Override
+  public void run(String... args) throws Exception {
+    log.info("Continuous Data Simulator started...");
+  }
 
-    //@Scheduled(fixedRateString = "${simulation.interval-ms}")
-    public void sendMockData(){
-        ParallelDataSimulator.DataSimulator(requestsPerInterval, random, restTemplate, ingestionEndpoint, log);
-    }
+  // @Scheduled(fixedRateString = "${simulation.interval-ms}")
+  public void sendMockData() {
+    ParallelDataSimulator.DataSimulator(requestsPerInterval, random, restTemplate, ingestionEndpoint, log);
+  }
 
 }

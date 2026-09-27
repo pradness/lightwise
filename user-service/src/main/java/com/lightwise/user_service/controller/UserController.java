@@ -16,7 +16,7 @@ import com.lightwise.user_service.service.UserService;
 import com.lightwise.user_service.exception.UserNotFoundException;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/user")
 public class UserController {
     private final UserService userService;
 

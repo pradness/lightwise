@@ -13,10 +13,14 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import com.lightwise.device_service.service.DeviceService;
+
+import jakarta.validation.Valid;
+
+import com.lightwise.device_service.dto.CommandRequest;
 import com.lightwise.device_service.dto.DeviceDto;
 
 @RestController
-@RequestMapping("api/v1/devices")
+@RequestMapping("api/v1/device")
 public class DeviceController {
   private DeviceService deviceService;
 
@@ -41,6 +45,11 @@ public class DeviceController {
   public ResponseEntity<DeviceDto> createDevice(@RequestBody DeviceDto deviceDto) {
     DeviceDto createdDevice = deviceService.createDevice(deviceDto);
     return ResponseEntity.ok(createdDevice);
+  }
+
+  @PostMapping("/{id}/command")
+  public ResponseEntity<?> command(@PathVariable Long id, @Valid @RequestBody CommandRequest request) {
+    return deviceService.sendCommand(id, request);
   }
 
   @PutMapping("/{id}")

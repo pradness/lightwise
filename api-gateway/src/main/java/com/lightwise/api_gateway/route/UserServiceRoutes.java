@@ -2,7 +2,7 @@ package com.lightwise.api_gateway.route;
 
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
-
+import org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions;
 import java.net.URI;
 
 import org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions;
@@ -23,7 +23,7 @@ public class UserServiceRoutes {
   @Bean
   public RouterFunction<ServerResponse> userRoute() {
     return GatewayRouterFunctions.route("user-service")
-        .route(RequestPredicates.path("/api/v1/users/**"), HandlerFunctions.http())
+        .route(RequestPredicates.path("/api/v1/user/**"), HandlerFunctions.http())
         .before(BeforeFilterFunctions.uri("http://localhost:8080"))
         .filter(CircuitBreakerFilterFunctions.circuitBreaker(
             "userServiceCircuitBreaker",
@@ -36,6 +36,16 @@ public class UserServiceRoutes {
     return GatewayRouterFunctions.route("fallbackRoute")
         .route(RequestPredicates.path("/fallbackRoute"),
             request -> ServerResponse.status(HttpStatus.SERVICE_UNAVAILABLE).body("User service is down"))
+        .build();
+  }
+
+  @Bean
+  public RouterFunction<ServerResponse> userServiceApiDocs() {
+    return GatewayRouterFunctions.route("user-service-api-docs")
+        .route(RequestPredicates.path("/docs/user-service/v3/api-docs"),
+            HandlerFunctions.http())
+        .before(BeforeFilterFunctions.uri("http://localhost:8080"))
+        .filter(FilterFunctions.setPath("/v3/api-docs"))
         .build();
   }
 }

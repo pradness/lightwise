@@ -3,6 +3,7 @@ package com.lightwise.api_gateway.route;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
 
+import org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions;
 import java.net.URI;
 
 import org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions;
@@ -23,7 +24,7 @@ public class DeviceServiceRoutes {
   @Bean
   public RouterFunction<ServerResponse> deviceRoute() {
     return GatewayRouterFunctions.route("device-service")
-        .route(RequestPredicates.path("/api/v1/devices/**"), HandlerFunctions.http())
+        .route(RequestPredicates.path("/api/v1/device/**"), HandlerFunctions.http())
         .before(BeforeFilterFunctions.uri("http://localhost:8081"))
         .filter(CircuitBreakerFilterFunctions.circuitBreaker(
             "deviceServiceCircuitBreaker",
@@ -36,6 +37,16 @@ public class DeviceServiceRoutes {
     return GatewayRouterFunctions.route("fallbackRoute")
         .route(RequestPredicates.path("/fallbackRoute"),
             request -> ServerResponse.status(HttpStatus.SERVICE_UNAVAILABLE).body("Device service is down"))
+        .build();
+  }
+
+  @Bean
+  public RouterFunction<ServerResponse> deviceServiceApiDocs() {
+    return GatewayRouterFunctions.route("device-service-api-docs")
+        .route(RequestPredicates.path("/docs/device-service/v3/api-docs"),
+            HandlerFunctions.http())
+        .before(BeforeFilterFunctions.uri("http://localhost:8081"))
+        .filter(FilterFunctions.setPath("/v3/api-docs"))
         .build();
   }
 }
